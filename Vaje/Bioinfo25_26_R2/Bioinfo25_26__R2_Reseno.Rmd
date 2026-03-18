@@ -1,0 +1,436 @@
+---
+title: "Bioinformatika - 2 Vaja 2024-25 REŠENO"
+author: "Tomaž Skrbinšek"
+date: ""
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+OPOZORILO: REŠENA VAJA JE IZ PREJŠNJEGA LETA IN LAHKO NEKOLIKO ODSTOPA OD VAJE, KI SMO JO NAREDILI LETOS!
+
+# VAJA 2
+
+V prvem delu današnje vaje se bomo ukvarjali predvsem z grafi. Pobližje si bomo ogledali paket ggplot2, eno od trenutno najmočnejših orodij za pripravo znanstvenih grafikonov, ki jih imamo na voljo. Seveda bomo za učinkovito uporabo grafov morali poznati že osnove R-a, ki smo jih obravnavali prejšnjič in ki ste jih (upam) z velikim veseljem naredili pri domači nalogi.
+
+#KAKO SPRAVITI PODATKE V R?
+
+Dobra praksa je, da imamo **podatke v obliki, ki je neposredno čitljiva R-u, že v delovni mapi (working directory) in da jih čitamo neposredno od tam v R**. Na ta način zagotovimo enostavno ponovljivost analiz, če kadar koli kasneje v podatkih odkrijemo pomanjkljivosti in moramo analizo ponoviti.
+
+R zelo učinkovito bere podatke iz enostavnih tekst datotek (.txt), ki so tudi najbolj običajen način za izmenjevanje podatkov v R-u. Običajno se uporablja "tab-delimited" format, kjer so stolpci med seboj ločeni s tabulatorji (neviden znak, ki ga dobimo s pritiskom na tipko <tab>).
+
+Običajen format uvoza podatkov iz datoteke je data frame (hitro ponovite kaj to je :)).
+
+Ukaz za uvoz je `read.table()`. Datoteka, ki jo bomo uvozili, se imenuje "chickWt.txt".
+
+*Naloga* 
+Poglej datoteko `chickWt.txt`. Poglej pomoč za funkcijo read.table, potem pa uvozi datoteko chickWt.txt v objekt` chick.weights`. Poskusi razumeti kaj počne koda spodaj.
+
+sep = 'separator', ločilo stolpcev. "\t" je znak TAB (tabulator).
+header = vrstica z imeni stolpcev
+
+```{r}
+chick.weights <-  read.table("chickWt.txt", sep="\t", header=TRUE)
+```
+
+
+Verjetno pa vas je kar nekaj navajenih Excel-a. Odlično! Excel je vrhunsko orodje za urejanje podatkov, uvoz pa je v R Studiu izjemno enostaven.
+
+
+*Naloga*
+Kliknite na chickWt.xlsx v oknu "Files" desno spodaj...
+
+Uvozite podatke v objekt `chick.weights.x`. Kodo, ki jo uporabniški vmesnik generira, skopirajte v "chunk" spodaj in ustrezno uredite ime objekta.
+
+```{r}
+#tvoja koda tukaj
+
+```
+
+Kodo za uvoz smo kopirali v chunk, ker je vedno dobra ideja imeti celoten proces, vključno z uvozom podatkov, dokumentiran. Prav tako nam "knit" na koncu ne bo delal, če ne bo vključen tudi uvoz podatkov in ne bomo mogli rekonstruirati objektov z enim klikom.... zelo dosti razlogov za, nobenega proti.
+
+Z malo sreče smo zdaj uvozili meritve teže piščančkov v prvih 21 dneh življenja. Različni piščančki so dobivali različno prehrano: "The body weights of the chicks were measured at birth and every second day thereafter until day 20. They were also measured on day 21. There were four groups of chicks on different protein diets."
+
+*Naloga* 
+a) Poglej strukturo objekta, ki si ga pravkar naredil/a. Kak tip podatkov sta stolpca "Chick" in "Diet"?  
+b) Izračunaj *povprečje in standardno deviacijo* stolpca "Diet". Je rezultat smiseln? Kak tip podatka bi morala biti "Chick" in "Diet"? 
+
+Namig: funkcije str, mean, sd.
+
+```{r}
+#tvoja koda tukaj
+str(chick.weights)
+mean(chick.weights$Diet)
+sd(chick.weights$Diet)
+
+```
+
+V R-u pravimo kategoričnim podatkom _"faktorji"_. Če bomo R-u povedali, da je nek podatek faktor, ga bo pravilno obravnaval v funkcijah, pravilno risal grafe itd. Posamezni kategoriji se reče _level_. Funkcija, ki iz nekega vektorja naredi faktor, se imenuje (kdo bi si mislil) factor().
+
+*Naloga* 
+Spremeni stolpca `Chick` in `Diet` objekta `chick.weights` v faktor. Nekaj kode je že vpisane, ostalo dopolni.
+
+Namig: posamezne stolpce iz data frame-a lahko dobiš z znakom \$ (npr. `data.frame$stolpec`).
+
+Preko obstoječega stolpca lahko tudi neposredno zapišeš rezultat in tako "spremeniš" stolpec: 
+`data.frame$stolpec <- funkcija(data.frame$stolpec)`
+
+```{r}
+chick.weights$Chick <- factor(chick.weights$Chick)
+#isto še za Diet...tvoja koda v nadaljevanju
+
+chick.weights$Diet <-  factor(chick.weights$Diet)
+```
+
+Faktorji poenostavijo delo s kategoričnimi podatki. Vse kategorije (levels) so v svojem vektorju, ki ga dobimo ali nastavimo s funkcijo levels(ime_faktorja). 
+
+*Naloga* 
+a) Poglej kategorije (levels) stolpca chick.weights$Diet (koda je že vpisana). 
+b) Nastavi kategorije stolpca Diet na Diet 1, Diet 2, Diet 3 in Diet 4. 
+c) Spet poglej data frame 'chick.weights' (lahko klikneš na ime objekta v oknu "environment" zgoraj desno).
+
+Namig: vektor besed/besedil (ang. 'strings') enostavno naredimo tako, da damo posamezno besedilo v narekovaje in uporabimo funkcijo c() ```c("besedilo 1", "besedilo 2", "besedilo n")```.
+
+```{r}
+levels(chick.weights$Diet)
+#tvoja koda tukaj - spremeni kategorije (levels) v 'Diet'.
+
+
+levels(chick.weights$Diet) <-  c("Diet 1", "Diet 2", "Diet 3", "Diet 4")
+```
+
+Poglejmo najprej samo piščančke, ki so dobivali dieti 1 in 2. 
+
+
+*Naloga* 
+Naredi objekt "diet1", v katerem bodo samo piščančki, ki so dobivali dieto 1 in objekt "diet2" za piščančke z dieto 2. 
+
+Namig: lahko uporabiš funkcijo subset(), lahko pa oglate oklepaje. Logična operacijo za enakost se v R-u piše kot == (ali je A enako B se zapiše kot A == B, rezultat pa je TRUE ali FALSE).
+
+```{r}
+#tvoja koda tukaj
+
+diet1 <- subset(chick.weights, Diet == "Diet 1")
+diet2 <- subset(chick.weights, Diet == "Diet 2")
+```
+
+
+*Naloga* 
+Primerjaj oba seta podatkov s funkcijo "summary"
+
+```{r}
+#tvoja koda tukaj
+summary(diet1)
+summary(diet2)
+```
+
+Videti je, da piščančki z dieto 2 hitreje rastejo kot z dieto 1. Bi pa morali zadeve bolje pogledati. Prva stvar, ki jo običajno naredimo, ko podatke uvozimo in pregledamo, je da podatke narišemo.
+
+
+##GRAFIKA V R-U
+
+R ima izjemna orodja za risanje grafov, imajo pa podobno težavo kot vse ostalo v R-u... moramo jih znati uporabljati.
+
+R ima v osnovni ("base") funkcionalnosti orodja za praktično vse standarne grafe, za kaj bolj kompleksnega pa potrebujemo funkcionalnost posameznih paketov. 
+
+Gremo narisati najbolj osnoven graf - "scatterplot" (po slovensko "razsevni diagram") - za 'diet1'. Na x os bomo dali "Time", čas od začetka poskusa, na y os pa "weight", težo piščančka.
+
+```{r}
+plot(x=diet1$Time, y=diet1$weight)
+```
+
+
+"Base Graphics", osnovna grafika v R-u je precej močna in se z njo lahko naredijo lepi grafi, primerni za objavo... z mnogo truda. Mnogo enostavnejši in mnogo močnejši je paket **ggplot2**, ki ga je naredil Hadley Wickham, en od vidnejših R-gurujev sedanjosti. Paket uporablja _"grammar of graphics"_ in ima ogromno pomoči na internetu. Z njim se da narediti skoraj vse - je verjetno najboljše orodje za znanstveno grafiko, ki trenutno obstaja. 
+
+Gremo po korakih. Vsak graf je, kot vse ostalo v R-u, objekt. Osnovna funkcija, ki naredi graf, je 'ggplot()'. Ne naredi nič drugega kot da pove kaj so podatki in nastavi ozadje ("platno") in kaj se bo globalno kako risalo. V našem primeru so podatki chick.weights, risali pa bomo za začetek na x os 'Time' in na y os 'weight' - podobno kot pri prejšnjem grafu.
+
+Pomemben del tukaj je _'mapping'_ ali "preslikava" nekega parametra (stolpca) v grafično podobo. Mapping uporablja funkcijo `aes()`, ki pove "estetiko" (aesthetics) - kateri podatki in kako se bodo risali.
+
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+p <- ggplot(data=chick.weights, mapping = aes(x=Time, y=weight))
+p
+```
+
+**aes()** POVEŽE stolpec v tabeli z neko grafično lastnostjo (estetiko - x, y, barva, tip črte itd.)! Brez te povezave se ne nariše nič!
+
+Ko smo poklicali 'p', smo narisali ozadje... nismo pa R-u povedali, kaj naj na to ozadje nariše. Vsem grafičnim elementom (točke, poligoni, linije...) pravimo _"geom"-i_. Zdaj bomo na ozadje dodali (+) geom točk... ali v jeziku R, geom_point(). 
+
+```{r}
+p + geom_point()
+```
+
+geom_point že ve, kaj želimo imeti na x in y iz opredelitve estetik (aes) za graf p. Lahko mu povemo, da naj bodo pike rdeče:
+```{r}
+p+geom_point(color="red")
+```
+
+Lahko pa mu povemo, da naj v estetiko barva (`color`) mapira kakšno kategorično spremenljivko - v našem primeru bi bila verjetno primerna "Diet"? Gremo poskusiti - torej, povežemo barvo točk s stolpcem `Diet`. Seveda ne smemo pozabiti, da gre za mapiranje (povezavo stolpec - estetika). Funkcija 'aes()'.
+
+```{r}
+p+geom_point(aes(color=Diet))
+```
+
+Hm. Malo bolje, še vedno pa ne ravno idealno. Poglejmo na internet kaj vse lahko delamo z ggplot2. Google -> ggplot2 documentation
+
+Točke se rišejo ena preko druge... morda bi lahko podatke malo razpršili in naredili prosojne? "jitter" v R-u doda malo naključnega šuma vsakemu podatku, da postanejo stvari vidne na grafu. Obstaja funkcija jitter(), mi pa bomo uporabili namesto geom_point kar 'geom_jitter' in vse še enkrat izrisali. Prosojnost je parameter, ki se mu običajno reče 'alpha'.
+
+*Naloga*
+Nariši zgorni graf, s tem da namesto neposrednega risanja točk uporabi geom, ki podatke "razprši". Nastavi prosojnost točk na 1/3.
+
+```{r}
+#copy/paste je tvoj prijatelj. :)
+
+p+geom_jitter(aes(color=Diet), alpha = 1/3)
+
+```
+
+
+*Naloga*
+Barve lahko preprosto menjamo, prav tako ozadja. Naredimo graf p1, ki bo dodal ozadju p črno-belo temo `+theme_bw()` in spremenil barvno paleto `+scale_color_brewer(palette = "Set1")` (koda vpisana). 
+
+Še enkrat narišite graf iz prejšnje naloge, ampak tokraj uporabi p1. Vidiš razliko?
+
+```{r}
+p1 <- p + theme_bw() + scale_color_brewer(palette = "Set1")
+
+#Naloga: nariši še enkrat graf iz prejšnje naloge, ampak uporabi p1 namesto p.
+p1 + geom_jitter(aes(color=Diet), alpha = 1/3)
+```
+
+
+Poskusimo namesto različnih barv narisati vsako dijeto v svoj graf in vse pokazati naenkrat, da lahko primerjamo. ggplot2 funkcija za to je facet_wrap(~faktor).
+
+```{r}
+p1+geom_jitter()+facet_wrap(~Diet)
+```
+
+
+Zanimivo bi bilo narisati krivuljo skozi te točke... geom_smooth()
+
+```{r}
+p1+geom_jitter()+facet_wrap(~Diet)+geom_smooth()
+```
+
+*Naloga* Morda bi bilo zanimivo vse skupaj narediti na enem grafu, potem pa z različnimi barvami obarvati tako črte kot točke? Za točke uporabite geom_jitter in naredite točke 1/2 prosojne (parameter 'alpha'). Pri geom_smooth lahko mapirate barvo (parameter 'color') in barvo intervala zaupanja (parameter 'fill') na Diet .
+
+```{r}
+#copy/paste je tvoj prijatelj. :)
+
+p1 + geom_jitter(aes(color=Diet), alpha=1/2)+geom_smooth(aes(color=Diet,fill=Diet))
+```
+
+
+Spet narišimo p1, toda tokrat namesto točk uporabimo boxplot. Čas (Time), ki je mapiran na x, moramo spremeniti v faktor - lahko kar v grafu.
+
+```{r}
+p1+geom_boxplot(aes(x=as.factor(Time)))
+```
+
+Zdaj pa sami
+
+*Naloga* mapirajte parameter "Diet" na barvo 'škatle' v box plotu. Namig: ne pozabite na funkcijo `aes()`, parameter za barvo vsebine škatle je `fill` (color je barva roba škatle in ga ne rabite spreminjati).
+
+```{r}
+#copy/paste je tvoj prijatelj. :)
+p1 + geom_boxplot(aes(fill=Diet, x=as.factor(Time)))
+```
+
+
+*Naloga* Zdaj pa še spremenite ime x osi v "Čas [dnevi]" in y osi v "Masa [g]" in dodajte naslov grafa: "Rast piščančkov do 21. dneva glede na prehrano". Namig: uporabite dokumentacijo za ggplot2, ki ste jo prej našli z Googlom.
+
+```{r}
+#copy/paste je tvoj prijatelj. :)
+
+```
+
+Graf lahko zdaj izvozite v poljubni obliki, ga do konca obdelate v risarskem programu ali pa kar copy/paste v vaše poročilo. 
+
+Dovolj piščancev. :) 
+
+Počistimo naš "workspace".
+```{r}
+rm(list=ls())
+```
+
+
+
+# MALO PRAKTIČNEGA RISANJA GRAFOV
+
+Gremo poskusiti naša znanja risanja grafov na podatkih o lignjih iz prejšnje vaje, tokrat bomo uporabili ggplot2. 
+
+Najprej naložimo podatke - tokrat iz datoteke 'squid.txt", ki se nahaja v našem delovnem folderju.
+
+```{r}
+squid = read.table("squid.txt", header=T)
+```
+
+*Nekaj o podatkih* (neposredno): This is a set of data on the Gonadosomatic index (GSI, i.e., the weight of the gonads relative to total body weight) of squid (Graham Pierce, University of Aberdeen, UK, unpublished data). Measurements were taken from squid caught at various locations in Scottish waters in different months and years.
+
+
+### Naloga
+Preveri, ali so podatki pravilno uvoženi.
+
+Podatke uredimo in pripravimo za analizo. Bomo najprej uredili spol v faktor in ga pravilno poimenovali.
+
+```{r}
+squid$Sex = factor(squid$Sex) #pretvorimo v faktor
+levels(squid$Sex)
+levels(squid$Sex) = c("Samec", "Samica")
+```
+Poglejte kaj se je zgodilo.
+
+_______________________________
+
+Tako, zdaj pa sami:
+
+### Naloga
+Spremeni lokacijo v faktor. Preimenuj "1", "2", ...itd v "Lok1", "Lok2"... itd. 
+
+<!-- TUKAJ NAREDI CHUNK ZA SVOJO KODO -->
+
+```{r}
+squid$Location = factor(squid$Location)
+levels(squid$Location) = c("Lok1", "Lok2", "Lok3", "Lok4")
+```
+
+
+### Naloga
+Spremeni leto (so štiri zaporedna leta) v faktor. Preimenuj "1", "2", itd v "Leto1", "Leto2",... itd.
+
+<!-- TUKAJ NAREDI CHUNK ZA SVOJO KODO -->
+```{r}
+squid$Year = factor(squid$Year)
+levels(squid$Year) = c("Year1", "Year2", "Year3", "Year4")
+```
+
+_______________________________
+
+Gremo zdaj to risati. Zanima nas kako se GSI (gonadosomatski indeks) spreminja glede na mesece, leta, spol, lokacijo...
+
+### Naloga
+Nariši histogram razporejanja GSI.
+```{r}
+ggplot(squid, aes(x=GSI)) + 
+  geom_histogram()
+```
+
+Tale siva ozadja... ali bi lahko to nekako spremenili, da bi temo (theme) grafa nastavili za vse grafe?
+
+```{r}
+theme_set(theme_bw())
+```
+
+Podobno se lahko globalno nastavijo vsi grafični parametri.
+
+### Naloga
+Ali je kakšna razlika med samci in samicami? Nariši graf GSI po spolu, uporabi graf "škatla z brki" (boxplot).
+
+```{r}
+ggplot(squid, aes(x=Sex, y=GSI)) + 
+  geom_boxplot()
+```
+
+### Naloga
+Kaj pa lokacija? So razlike? Nariši boxplot-e GSI po lokaciji. 
+
+```{r}
+ggplot(squid, aes(x=Location, y=GSI)) +
+  geom_boxplot()
+```
+Hm... aal katere lokacije odstopajo?
+
+
+
+### Naloga
+Za vsako lokacijo nariši histogram (namig: lahko uporabiš paneliranje, facet_wrap()). Dva grafa, dva chunka kode!
+
+
+```{r}
+ggplot(squid, aes(x=GSI)) +
+  geom_histogram() + facet_wrap(.~Location)
+```
+Uh... Lok2 in Lok4 imata zelo malo vzorcev. Morda dajmo to raje ven.
+
+
+### Naloga
+Pripravi nov dataframe 'squid1', ki bo brez lokacij Lok2 in Lok4.
+```{r}
+squid1 = squid[squid$Location != "Lok2" & squid$Location != "Lok4",]
+```
+
+
+
+Ali se GSI razlikuje po spolu in lokaciji?
+
+### Naloga
+Naredi boxplot GSI po spolu in paneliraj (facet) po lokaciji. Ne pozabi uporabiti 'squid1'!
+
+```{r}
+ggplot(squid1, aes(x=Sex, y=GSI))+
+  geom_boxplot()+
+  facet_wrap(.~Location)
+```
+
+Kako zgleda? Ali je videti, da bi imela lokacija pomemben vpliv?
+
+GSI nam daje vpogled v razmnoževalno aktivnost lignjev. Kateri parameter, ki ga imamo v podatkih bi po tvoj lahko vplival na GSI?
+
+### Naloga
+Nariši graf GSI po mesecih, uporabi stolpični diagram, potem pa paneliraj po spolu. Namig: za lepši izpis lako 'Month' spremeniš v faktor kar v samem grafu (v 'aes' ukazu), npr. aes(x=factor(Month)).
+
+```{r}
+ggplot(squid1, aes(x=factor(Month), y=GSI))+
+  geom_col()+
+  facet_wrap(.~Sex)
+```
+
+Ok, ampak to bi bilo morda bolje na enem grafu, da vidimo skupaaj samce in samice? 
+
+### Naloga
+Namesto paneliranja uporabi različne barve stolpcev za samce in samice. Bolj logičen je boxplot, tako da tudi geom_col zamenjaj za boxplot. Copy-paste je tvoj prijatelj!
+
+```{r}
+ggplot(squid1, aes(x=factor(Month), y=GSI, fill=Sex))+
+  geom_boxplot()
+```
+
+### Naloga
+Zdaj pa še "spimpaj" graf, da bo lep.
+- spremeni barve - samec modra, samica rdeča
+- Daj osem smiselna imena (v slovenščini)
+- Daj grafu smiseln naslov
+
+```{r}
+ggplot(squid1, aes(x=factor(Month), y=GSI, fill=Sex))+
+  geom_boxplot()+
+  ggtitle("Spolna aktivnost lignjev na Škotskem")+
+  xlab("mesec")+ylab("gonadosomatski indeks (GSI)")
+```
+
+Tako. Zdaj pa samo posnamemo tale graf na disk.
+
+### Naloga
+Posnami zadnje narisan graf na disk v datoteko "Moj_graf.png"
+
+
+Za konec poglejmo še kako vse lahko rišemo podatke v R-u... 
+
+```{r}
+#to nas odpelje na spletno stran...
+browseURL("http://www.r-graph-gallery.com/")
+```
+
+Najlepše pri tem je, da lahko kopiramo kodo za graf, ki nam je všeč in jo samo popravimo, da dela na naših podatkih.
+
+### Naloga
+Najdi graf, ki ti je všeč in skopiraj kodo v chunk spodaj. Zaženi. Igraj se in poskusi spreminjati parametre.
+
+```{r}
+
+```
+
+The End, vaja 2. Nadaljevanje v domači nalogi. ;)

@@ -1,0 +1,151 @@
+---
+title: "Bioinfo - R, vaja 1.2: Prva analiza"
+date: "3. 12. 2025"
+output: html_notebook
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# HITRA IN POVRŠNA ANALIZA PODATKOV O LIGNJIH
+
+Najprej naložimo podatke - tokrat iz datoteke 'squid.txt", ki se nahaja v našem delovnem folderju. Več o uvažanju podatkov prihodnjič.
+
+```{r}
+squid = read.table("squid.txt", header=T)
+```
+
+*Nekaj o podatkih* (neposredno): This is a set of data on the Gonadosomatic index (GSI, i.e., the weight of the gonads relative to total body weight) of squid (Graham Pierce, University of Aberdeen, UK, unpublished data). Measurements were taken from squid caught at various locations in Scottish waters in different months and years.
+
+Najprej bomo na hitro pogledali podatke. Zelo sta uporabni funkciji names() in str(). Funkcija names() nam pove imena stolpcev, str() nam pove strukturo podatkov. Dobro jo je vedno zagnati po uvozu podatkov, da preverimo, ali se je zgodila kakšna neumnost.
+```{r}
+names(squid)
+str(squid)
+```
+
+
+Pogosto nas bo zanimal samo del podatkov - npr. samo podatki o samicah. Najprej moramo razumeti, kako so podatki kodirani. Poglejmo spol.
+
+```{r}
+squid$Sex #zgleda kot 1 in 2
+unique(squid$Sex) #res je 1 in 2
+```
+Funkcija unique() nam pove unikatne vrednosti - tukaj sta dejansko dve, 1 za samce in 2 za samice (kar smo prebrali v opisu podatkov).
+
+Lahko si pripravimo podatke samo o samcih. Najprej potrebujemo logični vektor, ki nam pove, kateri zapisi so samci. Kjer je samec je "TRUE", kjer ni samec je "FALSE". Samec je kodiran kot 1, samica kot 0. Operator == lahko razumemo kot vprašanje "Ali je enako?" z dvema odgovoroma, TRUE in FALSE.
+```{r}
+sel <- squid$Sex == 1
+#poglej v konzoli, kaj smo dobili!
+```
+
+
+Če damo ta naš logični vektor 'sel' v oglate oklepaje, nam bo "pobral" samo zapise, kjer je vrednost TRUE. Torej samo samce.
+```{r}
+squidM = squid[sel,] #podatki samo za samce
+```
+
+Lahko pa naredimo bližnjico in vektor, ki nam izbere ustrezni spol, naredimo kar mimogrede v oglatih oklepajih. To se običajno tako uporablja.
+```{r}
+squidM <- squid[squid$Sex == 1,]
+```
+
+
+Kot vidimo, lahko postavimo tudi logične pogoje, katere zapise želimo. 
+
+Osnovni logični ukazi v R-u:
+enakost ( == )
+ni enako ( != )
+večje, večje ali enako ( >, >=)
+manjše, manjše ali enako (<, <=)
+logični 'ali' ( | )
+logični 'in'  ( & )
+
+_______________________________
+
+*Naloga* Pripravi tabelo squidF samo za samice. Namig: uporabi copy-paste kode iz prejšnjega chunk-a!
+
+```{r}
+
+```
+
+
+Spol in lokacija sta v podatkih zapisana kot številki, čeprav so podatki dejansko nominalni. Nominalnim spremenljivkam pravimo tudi `FAKTORJI`. Če R-u povemo, da je neka spremenljivka faktor, bo to pravilno upošteval v analizah in grafih. To storimo s funkcijo `factor()`.
+
+```{r}
+squid$LocationF = factor(squid$Location)
+str(squid)
+```
+
+Zdaj pa sami to naredite še za spol (stolpec 'Sex'). Preveri, ali je res nastal faktor.
+```{r}
+squid$SexF = #tvoja koda tukaj
+```
+
+
+Faktorji imajo vrednosti, ki se ponavljajo - v tem primeru samec in samica. Tem kategorijam pravi R 'levels' in jih lahko preprosto preimenujemo.
+
+```{r}
+levels(squid$SexF)
+```
+To je vektor imen kategorij. Zdaj sta v njem samo vrednosti "1" in "2". Zakaj mislite, da R vrednosti izpiše z narekovaji?
+
+Vektor z imeni kategorij (levels) lahko preprosto prepišemo z novim vektorjem, ki ga naredimo s funkcijo c(). Tako kategorije preimenujemo.
+```{r}
+levels(squid$SexF)=c("Male","Female")
+head(squid)
+```
+
+Naloga: Sam(a) preimenuj spol v stolpcu $SexF v "Samec", "Samica".
+```{r}
+#Tvoja koda tukaj.
+```
+
+
+Običajno najprej izrišemo podatke. Več o risanju grafov naslednjič, tokrat le za pokušino.
+
+```{r}
+hist(squid$GSI) #na hitro histogram. Ni zelo informativno.
+boxplot(GSI~SexF, data=squid)
+```
+
+Ni videti velikih razlik. Ampak morda moramo vseeno pogledati podrobneje.
+
+Poglejmo še učinek meseca vzorčenja.
+
+```{r}
+library(lattice)
+bwplot(GSI~SexF|factor(Month), data=squid) #zanimivo
+```
+
+
+```{r}
+#zdaj pa še obrnemo
+bwplot(GSI~factor(Month)|SexF, data=squid) 
+```
+
+Poskusimo razumeti še vpliv lokacije
+```{r}
+bwplot(GSI~factor(Month)|SexF*LocationF, data=squid)
+```
+
+
+```{r}
+coplot(GSI~factor(Month)|SexF*LocationF, data=squid) #oboje skupaj
+```
+
+Lokaciji 4 in 2 sta bili slabo merjeni in nam samo delata šum. Poskusimo brez.
+```{r}
+squid2 = squid[squid$Location != 2 & squid$Location != 4,]#nočemo lokacij 2 in 4
+#Naloga: copy-paste kodo iz prejšnjih dveh "chunk"-a in zamenjaj podatke za squid2
+
+```
+
+Za konec še kliknite "Preview" tipko na vrhu in poglejte vaše poročilo. 
+
+**THE END** (za tokrat ;))
+
+_______________________________
+_______________________________

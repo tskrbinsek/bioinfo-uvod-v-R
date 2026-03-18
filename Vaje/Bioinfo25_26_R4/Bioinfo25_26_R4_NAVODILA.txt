@@ -1,0 +1,132 @@
+
+###################################################
+# Bioinformatika 2025 - 2026, R Vaja 4 - Titanik ##
+###################################################
+
+
+## UVOD IN PRIPRAVA ZA DELO
+
+Vaša prva samostojna analiza podatkov. Sami (z malo pomoči) boste raziskali podatke o potnikih na ladji Titanic.
+
+### Kako se lotiti naloge
+
+Vsako nalogo bomo delali po logičnih korakih, ki sem jih pripravil spodaj. Vsak korak je *zaključen, logičen del analize*. Korake boste delali samostojno v debati s sošolci in sošolkami okrog vas. Prvi ki bo nalogo v koraku rešil, jo bo na projektorju pokazal kolegom. Rešitev bomo razložili in komentirali in šli na naslednji korak.
+
+Poskusite slediti paradigmi "ponovljivega raziskovanja" (reproducible research). Zapišite vašo logiko in kaj želite narediti, potem pa chunk kode, ki to delo opravi.
+
+
+### Naloga 1: Priprava projekta, priprava datoteke za analizo.
+- Naredite nov R Studio projekt v vašem študentskem folderju. Dajte mu ime TitanikAnaliza. 
+- V projektni mapi si naredite mapo "Data".
+- V projektni mapi si naredite mapo "Outputs".
+
+Skopirajte ta navodila v projektno mapo. Skopirajte podatke v mapo "Data".
+
+### Naloga 2: Naredite .Rmd datoteko
+- Naredite .Rmd datoteko (File/New File/R Notebook)
+- Datoteko posnamite. Dajte ime "Vaja4_Titanic.Rmd".
+- Napišite svoje ime in dajte smiselno ime vaji v "glavi".
+
+### Naloga 3: priprava knjižnic
+- Naredi "setup" chunk.
+- Naloži knjižnice. Za začetek dplyr, ggplot2 in readxl, dalje bomo dodali po potrebi.
+- Skopiraj ta navodila (od ### Naloga 4 naprej) v tvojo datoteko.
+
+### Naloga 4
+Uvozi podatke! Objektu daj ime 'TitanicData'.
+
+
+*O podatkih* (vir: Wikipedia):
+RMS Titanic (Royal Mail Ship Titanic) je bil britanski potniški prekooceanski parnik, ki ga je po naročili družbe White Star Line izdelala ladjedelnica Harlan-Wolff iz Belfasta. Ob krstu, 2. aprila 1912, je bila to največja in najbolj razkošna potniška ladja na svetu. Bil je tudi prva prekooceanska ladja z bazenom na krovu. Ladja se je v zgodovino zapisala po tem, da se je na krstni vožnji, v noči iz 14. na 15. april 1912, zaletela v ledeno goro in se po skoraj triurni agoniji potopila. Pri tem so zaradi neupoštevanja varnostnih predpisov in napačnega ravnanja posadke umrli 1.503 ljudje, preživelo pa jih je le 705. Potopitev, za tisti čas nepotopljive ladje, danes predstavlja eno največjih pomorskih nesreč v človeški zgodovini, ki pa ni bila zaman, saj je pripomogla k povečanju varnosti na morju.
+
+Potniki Titanika so bili zelo različni, tako po družbenem statusu kot po starosti, spolu... 
+
+## CILJ NALOGE
+
+*Cilj naloge* je raziskati, ali so razlike med potniki vplivale na to, ali so nesrečo preživeli. 
+
+*- "Ampak saj ne znamo R-a!!! Kako naj to sami rešujemo???"*
+Nič hudega. Imate 'Cheat Sheet'-e, R ima veliko pomoči na Internetu - Google, Chat GPT, Gemini... Tudi sam pogosto ne vem, kako bom analizo naredil - pomembno je, da vem KAJ želim narediti in da razumem metode (ne ukaze!), ki jih želim uporabiti. Tisti "kako" se potem (bolj ali manj) enostavno reši.
+
+
+### Naloga 5: Preglejte uvoz in strukturo podatkov.
+
+5a - Poglejte, ali so podatki pravilno uvoženi. Poglejte strukturo. 
+5b - Ali je potrebno kaj pretvoriti v faktorje? Če da, potem to storite in smiselno poimenujte 'levele' faktorjev.
+5c - Ali je kaj manjkajočih podatkov?
+
+
+Nekaj o podatkih:
+
+Variable Name | Description
+--------------|-------------
+Survived      | Survived (1) or died (0)
+Pclass        | Passenger's class
+Name          | Passenger's name
+Sex           | Passenger's sex
+Age           | Passenger's age
+SibSp         | Number of siblings/spouses aboard
+Parch         | Number of parents/children aboard
+Ticket        | Ticket number
+Fare          | Fare (pre-1970 British Pounds)
+Cabin         | Cabin
+Embarked      | Port of embarkation; C = Cherbourg, Q = Queenstown, 
+                                     S = Southampton)
+
+
+### Naloga 6: Razmislek!
+
+Katere so odvisne, katere neodvisne spremenljivke?
+
+
+### Naloga 7: Raziščite kategorične spremenljivke.
+5a - Koliko je moških, koliko je žensk? 
+5b - Koliko ljudi je bilo v posameznem kabinskem razredu? 
+5c - Koliko ljudi se je vkrcalo v posameznem pristanišču?
+5d - Koliko ljudi je preživelo, koliko umrlo?
+
+Namig: dplyr, select(), summary(), summarize(), piping %>% ...
+
+### Naloga 8: Raziščite numerične spremenljivke.
+
+6a - Kakšna je povprečna, minimalna, maksimalna starost?
+6b - Nariši graf razporejanja starosti (histogram ali density plot)
+6c - Oboje še naredi za ceno karte (Fare)
+6d - Velikost družine - naredi nov stolpec za velikost družine! Poglej kako se razporeja!
+
+Za risanje ne pozabite na ggplot2 - če ste pozabili, cheat sheet ali google. :) Ne pozabite: aes() funkcija definira "mapiranje" spremenljivk (stolpcev) v vizualni prostor.
+
+### Naloga 9: Razmislek!
+
+Postavite hipoteze - kateri izmed parametrov bi lahko vplivali na preživetje? Napišite vaše hipoteze. Katere so najbolj pomembne (vrstni red)?
+
+Ali potrebujemo vse stolpce? Naredi nov dataframe in izloči vse stolpce, ki jih ne bomo potrebovali.
+
+### Naloga 10: Razišči preživetje po različnih hipotezah. 
+
+Gremo korak po korak raziskati hipoteze, eno naenkrat. 
+Naredimo načrt, izpeljemo.
+- Numerično: kako bi dobili odgovor?
+- Grafično: nariši graf (ali več grafov), ki ti bodo dali vpogled. Razmislimo (skupaj) kako bi naj graf zgledal, potem ga naredimo.
+
+group_by, summarize (s funkcijo n()). pivot_wider() zloži faktor v stolpce. mutate() lahko izračunate deleže. Grafi: geom_bar, geom_col, geom_histogram, geom_density, geom_point... estetike color, linetype, fill, itd.
+
+
+### Naloga 10: Razmislek
+- Kako rezultati podpirajo tvoje hipoteze? Ali katere spremenljivke kažejo izrazit vpliv na preživetje.
+- Razmisli - ali so lahko vplivi spremenljivk na preživetje med sabo povezani? Korelacija / kavzacija?
+
+
+### Naloga 11: Razišči interakcije med spremenljivkami
+Katere spremenljivke bi lahko bile med sabo povezane / moteče? Raziščimo!
+Naredimo načrt, izpeljemo.
+
+- Numerično: kako bi dobili odgovor?
+- Grafično: nariši graf (ali več grafov), ki ti bodo dali vpogled. Razmislimo (skupaj) kako bi naj graf zgledal, potem ga naredimo.
+
+### Naloga 12: Razšči za hec še s paketom 'explore'.
+
+R ima skoraj neskončno paketov - včasih obstajajo namenski paketi, ki zelo poenostavijo posamezne funkcije.
+
+- Instaliraj in naloži paket "explore".
+- Poskusi funkcije "explore", "explore_all" in "explain_tree". Interakcije lahko raziščemo s parametrom "target".
