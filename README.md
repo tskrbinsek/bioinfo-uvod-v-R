@@ -18,7 +18,7 @@ Tukaj so zbrani učni materiali za del predmeta "Uvod v R". Učne materiale osve
 
 ### Vsebina
 
-Učni materiali obsegajo teorijo (predavanja) in praktične vaje (v R-u) osnovnega tečaja programskega jezika R. Ker so tarčna publika študenti biologije, so primeri bolj biološko obarvani, je pa nevomno uporabno tudi za druge profile študentov.
+Učni materiali obsegajo teorijo (predavanja) in praktične vaje (v R-u) osnovnega tečaja programskega jezika R. Ker so tarčna publika študenti biologije, so primeri bolj biološko obarvani, je pa nedvomno uporabno tudi za druge profile študentov.
 
 Predavanja se (ohlapno) nanašajo na vaje (npr predavanje 1 - vaja 1 itd.)
 
