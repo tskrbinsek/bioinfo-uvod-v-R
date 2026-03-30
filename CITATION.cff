@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: 'Uvod v R, učno gradivo'
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Tomaž
+    family-names: Skrbinšek
+    email: tomaz.skrbinsek@bf.uni-lj.si
+    orcid: 'https://orcid.org/0000-0003-4435-7477'
+    affiliation: 'University of Ljubljana, Biotechnical Faculty'
+abstract: >-
+  Zbrani učni materiali za del predmeta Bioinformatika, 
+  "Uvod v R". Učne materiale osvežujem tekom vsakega
+  šolskega leta, ko predmet izvajamo.
+
+
+  Učni materiali obsegajo teorijo (predavanja) in praktične
+  vaje (v R-u) osnovnega tečaja programskega jezika R. Ker
+  so tarčna publika študenti biologije, so primeri bolj
+  biološko obarvani, je pa nedvomno uporabno tudi za druge
+  profile študentov.
+license: CC-BY-4.0
